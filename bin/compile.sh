@@ -1,9 +1,18 @@
-#!/bin/bash
-echo "Installing OpenSSL 1.1.1..."
-mkdir -p $BUILD_DIR/openssl
-curl -O https://www.openssl.org/source/openssl-1.1.1.tar.gz
-tar -xzvf openssl-1.1.1.tar.gz
+#!/bin/sh
+# Compile OpenSSL 1.1.1
+
+# Install dependencies
+apt-get update && apt-get install -y build-essential curl wget
+
+# Download OpenSSL 1.1.1 source
+wget https://www.openssl.org/source/openssl-1.1.1.tar.gz
+tar -xvf openssl-1.1.1.tar.gz
 cd openssl-1.1.1
-./config --prefix=$BUILD_DIR/openssl
-make && make install
-export PATH=$BUILD_DIR/openssl/bin:$PATH
+
+# Compile OpenSSL
+./config
+make
+make install
+
+# Clean up
+rm -rf /openssl-1.1.1
