@@ -4,23 +4,56 @@
 # Heroku sets $BUILD_DIR to the root of your app during the build
 BUILD_DIR=$1
 
-echo "Installing OpenSSL 1.1.1..."
+echo "Starting OpenSSL 1.1.1 installation..."
 
-# Download and extract OpenSSL
-OPENSSL_VERSION=1.1.1  # Replace with your desired version
+# Define OpenSSL version
+OPENSSL_VERSION=1.1.1
 OPENSSL_TAR=openssl-$OPENSSL_VERSION.tar.gz
+OPENSSL_DIR=openssl-$OPENSSL_VERSION
+OPENSSL_URL=https://www.openssl.org/source/$OPENSSL_TAR
 
-curl -O https://www.openssl.org/source/$OPENSSL_TAR
-tar -xzf $OPENSSL_TAR
+# Download OpenSSL with error handling
+echo "Downloading OpenSSL $OPENSSL_VERSION..."
+curl -fL -o $OPENSSL_TAR $OPENSSL_URL || {
+  echo "Failed to download OpenSSL. Check the version or URL."
+  exit 1
+}
 
-# Compile and install OpenSSL into the app's directory
-cd openssl-$OPENSSL_VERSION
-./config --prefix=$BUILD_DIR/openssl
-make
-make install
+# Verify the downloaded file is a valid tarball
+file $OPENSSL_TAR | grep -q 'gzip compressed data' || {
+  echo "Downloaded file is not a valid gzip archive."
+  exit 1
+}
+
+# Extract the tarball
+echo "Extracting OpenSSL..."
+tar -xzf $OPENSSL_TAR || {
+  echo "Failed to extract OpenSSL tarball."
+  exit 1
+}
+
+# Compile and install OpenSSL
+cd $OPENSSL_DIR
+echo "Configuring OpenSSL..."
+./config --prefix=$BUILD_DIR/openssl || {
+  echo "Configuration failed."
+  exit 1
+}
+
+echo "Compiling OpenSSL..."
+make || {
+  echo "Compilation failed."
+  exit 1
+}
+
+echo "Installing OpenSSL..."
+make install || {
+  echo "Installation failed."
+  exit 1
+}
 
 # Clean up
 cd ..
-rm -rf openssl-$OPENSSL_VERSION $OPENSSL_TAR
+rm -rf $OPENSSL_DIR $OPENSSL_TAR
 
-echo "OpenSSL 1.1.1 installed successfully."
+echo "OpenSSL 1.1.1 installation completed successfully."
