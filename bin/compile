@@ -1,9 +1,26 @@
 #!/bin/bash
+# Compile script for OpenSSL buildpack
+
+# Heroku sets $BUILD_DIR to the root of your app during the build
+BUILD_DIR=$1
+
 echo "Installing OpenSSL 1.1.1..."
-mkdir -p $BUILD_DIR/openssl
-curl -O https://www.openssl.org/source/openssl-1.1.1.tar.gz
-tar -xzvf openssl-1.1.1.tar.gz
-cd openssl-1.1.1
+
+# Download and extract OpenSSL
+OPENSSL_VERSION=1.1.1  # Replace with your desired version
+OPENSSL_TAR=openssl-$OPENSSL_VERSION.tar.gz
+
+curl -O https://www.openssl.org/source/$OPENSSL_TAR
+tar -xzf $OPENSSL_TAR
+
+# Compile and install OpenSSL into the app's directory
+cd openssl-$OPENSSL_VERSION
 ./config --prefix=$BUILD_DIR/openssl
-make && make install
-export PATH=$BUILD_DIR/openssl/bin:$PATH
+make
+make install
+
+# Clean up
+cd ..
+rm -rf openssl-$OPENSSL_VERSION $OPENSSL_TAR
+
+echo "OpenSSL 1.1.1 installed successfully."
