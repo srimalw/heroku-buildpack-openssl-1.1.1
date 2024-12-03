@@ -52,6 +52,11 @@ make install || {
   exit 1
 }
 
+mkdir -p $BUILD_DIR/.profile.d
+echo "export PATH=$BUILD_DIR/openssl/bin:\$PATH" >> $BUILD_DIR/.profile.d/openssl.sh
+echo "export LD_LIBRARY_PATH=$BUILD_DIR/openssl/lib:\$LD_LIBRARY_PATH" >> $BUILD_DIR/.profile.d/openssl.sh
+
+
 # Clean up
 cd ..
 rm -rf $OPENSSL_DIR $OPENSSL_TAR
