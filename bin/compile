@@ -14,5 +14,10 @@ cd openssl-1.1.1
 make
 make install
 
+# After make install
+/usr/local/bin/openssl version
+
+export PATH="/usr/local/bin:$PATH"
+export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
 # Clean up
 rm -rf /openssl-1.1.1
