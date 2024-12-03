@@ -9,15 +9,22 @@ wget https://www.openssl.org/source/openssl-1.1.1.tar.gz
 tar -xvf openssl-1.1.1.tar.gz
 cd openssl-1.1.1
 
-# Compile OpenSSL
-./config
+
+# Clean build directories
+rm -rf /app/vendor/openssl
+
+# Configure with custom installation path
+./config --prefix=/app/vendor/openssl --openssldir=/app/vendor/ssl
+
+make depend
 make
-make install
+make install_sw
 
 # After make install
 /usr/local/bin/openssl version
 
-export PATH="/usr/local/bin:$PATH"
+export PATH="/app/vendor/openssl/bin:$PATH"
 export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
 # Clean up
 rm -rf /openssl-1.1.1
+
